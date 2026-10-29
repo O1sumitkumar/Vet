@@ -1,6 +1,7 @@
 // Decides vet's exit code so CI pipelines can fail a build on problems:
 // 0 = nothing wrong, 1 = broken links, failing tests, or a score under
-// --min-score. (cli.js uses 2 when vet itself couldn't run, e.g. a bad URL.)
+// --min-score. (cli.js uses 2 when vet itself couldn't run, e.g. a bad URL
+// or a usage mistake like a missing URL or an unknown option.)
 export const EXIT_PROBLEMS_FOUND = 1;
 export const EXIT_VET_FAILED = 2;
 

@@ -1,6 +1,6 @@
 // Wires together the command line, the repo checks, and the report.
 import { readFileSync } from 'node:fs';
-import { Command } from 'commander';
+import { Command, CommanderError } from 'commander';
 import picocolors from 'picocolors';
 import { parseRepoUrl } from './parseRepoUrl.js';
 import { cloneRepo } from './cloneRepo.js';
@@ -31,7 +31,9 @@ export async function runCli(argv) {
     .option('--no-tests', "don't run the repo's tests (running them executes the repo's code on your machine)")
     .option('--json', 'print the full report as JSON instead of text')
     .option('--min-score <number>', 'exit with code 1 if the overall score is below this number (0 to 10)')
-    .parse(argv);
+    .exitOverride();
+
+  if (!parseArguments(program, argv)) return;
 
   const [url] = program.args;
   const options = program.opts();
@@ -46,6 +48,20 @@ export async function runCli(argv) {
   }
 
   await vetRepository(url, options);
+}
+
+// Commander exits with 1 on a usage mistake, which CI would read as "problems
+// found". exitOverride() makes it throw instead (after printing the error), so a
+// usage mistake gets code 2 while --help and --version keep their code 0.
+function parseArguments(program, argv) {
+  try {
+    program.parse(argv);
+    return true;
+  } catch (error) {
+    if (!(error instanceof CommanderError)) throw error;
+    process.exitCode = error.exitCode === 0 ? 0 : EXIT_VET_FAILED;
+    return false;
+  }
 }
 
 async function vetRepository(url, options) {
