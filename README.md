@@ -116,7 +116,7 @@ hour. Vet needs 4 per repo, so this only matters if you vet many repos.
 |------|---------|
 | `0` | No broken links, and all test commands passed. |
 | `1` | Broken links, failing test commands, or a score below `--min-score` were found, so CI can fail the build. |
-| `2` | Vet itself couldn't run (a bad URL, an invalid `--min-score`, or the clone failed). |
+| `2` | Vet itself couldn't run (a usage mistake such as a missing URL or an unknown option, a bad URL, an invalid `--min-score`, or the clone failed). |
 
 ### Where the checks come from
 
